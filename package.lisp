@@ -5,6 +5,7 @@
   (:export :*rpc-port*
 	   :*rpc-host*
 	   :*sweet-spot*
+	   :get-trx-status
 	   :get-carrier-frequency
 	   :set-carrier-frequency
 	   :get-dial-frequency
@@ -13,15 +14,13 @@
 	   :get-modem
 	   :set-modem
 	   :get-spot
-	   :set-spot
+	   :toggle-spot
 	   :get-afc
-	   :set-afc
-	   :get-sideband
-	   :set-sideband
+	   :toggle-afc
 	   :get-rsid-rx
-	   :set-rsid-rx
+	   :toggle-rsid-rx
 	   :get-squelch
-	   :set-squelch
+	   :toggle-squelch
 	   :get-squelch-level
 	   :set-squelch-level
 	   :set-rx
@@ -29,6 +28,7 @@
 	   :get-transmit-frequency
 	   :set-transmit-frequency
 	   :add-tx-string
+	   :send-buffer
 	   :get-modem-quality
 	   :search-up
 	   :search-down
@@ -38,4 +38,19 @@
 	   :clear-tx-data
 	   :clear-message
 	   :list-modems
-	   :list-apis))
+	   :list-apis
+	   :list-modes
+	   :get-mode
+	   :set-mode
+	   :get-version
+	   :get-afc-range
+	   :set-afc-range
+	   :get-reverse
+	   :toggle-reverse
+	   :tune
+	   :abort-tune
+	   :get-status-1
+	   :get-status-2
+	   :get-modem-bw
+	   :get-modem-bw
+	   :get-olivia-bw))

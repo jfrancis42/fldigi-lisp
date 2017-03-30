@@ -12,73 +12,85 @@
 (defparameter *message* "")
 (defparameter *message-lock* (bt:make-lock))
 
-(defun rpc-get (thing)
-  (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing) :host *rpc-host* :url "/RPC2" :port *rpc-port*))
-
-(defun rpc-set (thing value)
-    (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing value) :host *rpc-host* :url "/RPC2" :port *rpc-port*))
+(defun fldigi-rpc (thing &optional value)
+  (if value
+      (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing value) :host *rpc-host* :url "/RPC2" :port *rpc-port*)
+      (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing) :host *rpc-host* :url "/RPC2" :port *rpc-port*)))
 
 (defun get-carrier-frequency ()
-  (rpc-get "modem.get_carrier"))
+  (fldigi-rpc "modem.get_carrier"))
 
 (defun set-carrier-frequency (value)
-  (rpc-set "modem.set_carrier" value))
+  (fldigi-rpc "modem.set_carrier" value))
 
 (defun get-dial-frequency ()
-  (rpc-get "main.get_frequency"))
+  (fldigi-rpc "main.get_frequency"))
 
 (defun set-dial-frequency (value)
-  (rpc-set "main.set_frequency" (* 1.0 value)))
+  (fldigi-rpc "main.set_frequency" (* 1.0 value)))
 
 (defun get-modem ()
-  (rpc-get "modem.get_name"))
+  (fldigi-rpc "modem.get_name"))
 
 (defun set-modem (name)
-  (rpc-set "modem.set_by_name" name))
+  (cond
+    ((equal "BPSK31" name)
+     (setf *start-wait* 5)
+     (setf *char-wait* 1))
+    ((equal "BPSK63" name)
+     (setf *start-wait* 5)
+     (setf *char-wait* 0.5))
+    ((equal "BPSK125" name)
+     (setf *start-wait* 5)
+     (setf *char-wait* 0.5))
+    ((equal "BPSK250" name)
+     (setf *start-wait* 5)
+     (setf *char-wait* 0.5))
+    (t
+     (setf *start-wait* 5)
+     (setf *char-wait* 2)))
+  (fldigi-rpc "modem.set_by_name" name))
 
 (defun get-spot ()
-  (rpc-get "spot.get_auto"))
+  (fldigi-rpc "spot.get_auto"))
 
-(defun set-spot (value)
-  (rpc-set "spot.set_auto" value))
+(defun toggle-spot (value)
+  (fldigi-rpc "spot.toggle_auto"))
 
 (defun get-afc ()
-  (rpc-get "main.get_afc"))
+  (fldigi-rpc "main.get_afc"))
 
-(defun set-afc (value)
-  (rpc-set "main.set_afc" value))
-
-(defun get-sideband ()
-  (rpc-get "main.get_sideband"))
-
-(defun set-sideband (value)
-  (rpc-set "main.set_sideband" value))
+(defun toggle-afc (value)
+  (fldigi-rpc "main.toggle_afc"))
 
 (defun get-rsid-rx ()
-  (rpc-get "main.get_rsid"))
+  (fldigi-rpc "main.get_rsid"))
 
-(defun set-rsid-rx (value)
-  (rpc-set "main.set_rsid" value))
+(defun toggle-rsid-rx ()
+  (fldigi-rpc "main.toggle_rsid" value))
 
 (defun get-squelch ()
-  (rpc-get "main.get_squelch"))
+  (fldigi-rpc "main.get_squelch"))
 
-(defun set-squelch (value)
-  (rpc-set "main.set_squelch" value))
+(defun toggle-squelch ()
+  (fldigi-rpc "main.toggle_squelch" value))
 
 (defun get-squelch-level ()
-  (rpc-get "main.get_squelch_level"))
+  (fldigi-rpc "main.get_squelch_level"))
 
 (defun set-squelch-level (value)
-  (rpc-set "main.set_squelch_level" value))
+  (fldigi-rpc "main.set_squelch_level" value))
+
+(defun get-trx-status ()
+  (fldigi-rpc "main.get_trx_status"))
 
 (defun set-rx ()
-  (unless (equal "rx" (rpc-get "main.get_trx_status"))
-    (rpc-set "main.rx")))
+  (unless (equal "rx" (get-trx-status))
+    (fldigi-rpc "main.rx")))
 
 (defun set-tx ()
-  (unless (equal "tx" (rpc-get "main.get_trx_status"))
-    (rpc-set "main.tx")))
+  (unless (equal "tx" (get-trx-status))
+    (fldigi-rpc "main.tx")))
 
 (defun get-transmit-frequency ()
   (+ (get-dial-frequency) (get-carrier-frequency)))
@@ -94,42 +106,95 @@
   (bt:with-lock-held (*message-lock*)
     (setf *message* (concatenate 'string *message* text))))
 
+(defun send-buffer (&optional (text nil))
+  (when text (add-tx-string text))
+  (bt:with-lock-held (*message-lock*)
+    (when (> (length *message*) 0)
+      (fldigi-rpc "text.add_tx" *message*)
+      (set-tx)
+      (sleep *start-wait*)
+      (loop while (> (length (get-tx-data)) 0)
+	 do (sleep *char-wait*))
+      (setf *message* "")
+      (set-rx))))
+
 (defun get-modem-quality ()
-  (rpc-get "modem.get_quality"))
+  (fldigi-rpc "modem.get_quality"))
 
 (defun search-up ()
-  (rpc-get "modem.search_up"))
+  (fldigi-rpc "modem.search_up"))
 
 (defun search-down ()
-  (rpc-get "modem.search_down"))
+  (fldigi-rpc "modem.search_down"))
 
 (defun get-rx-data ()
-  (babel:octets-to-string
-   (rpc-get "rx.get_data")))
+  (map 'string #'code-char (fldigi-rpc "rx.get_data")))
 
 (defun get-tx-data ()
   (babel:octets-to-string
-   (rpc-get "tx.get_data")))
+   (fldigi-rpc "tx.get_data")))
 
 (defun clear-rx-data ()
-  (rpc-get "text.clear_rx"))
+  (fldigi-rpc "text.clear_rx"))
 
 (defun clear-tx-data ()
-  (rpc-get "text.clear_tx"))
+  (fldigi-rpc "text.clear_tx"))
 
 (defun clear-message ()
     (bt:with-lock-held (*message-lock*)
       (setf *message* "")))
 
 (defun list-modems ()
-  (rpc-get "modem.get_names"))
+  (fldigi-rpc "modem.get_names"))
 
 (defun list-apis ()
-  (rpc-get "fldigi.list"))
+  (fldigi-rpc "fldigi.list"))
 
+(defun list-modes ()
+  (fldigi-rpc "rig.get_modes"))
 
+(defun get-mode ()
+  (fldigi-rpc "rig.get_mode"))
 
+(defun set-mode (mode)
+  (fldigi-rpc "rig.set_mode" mode))
 
+(defun get-version ()
+  (fldigi-rpc "fldigi.version"))
 
+(defun get-afc-range ()
+  (fldigi-rpc "modem.get_afc_search_range"))
 
+(defun set-afc-range (range)
+  (fldigi-rpc "modem.get_afc_search_range" range))
+
+(defun get-reverse ()
+  (fldigi-rpc "main.get_reverse"))
+
+(defun toggle-reverse ()
+  (fldigi-rpc "main.toggle_reverse" value))
+
+(defun tune ()
+  (fldigi-rpc "main.tune" value))
+
+(defun abort-tune ()
+  (fldigi-rpc "main.abort" value))
+
+(defun get-status-1 ()
+  (fldigi-rpc "main.get_status1"))
+
+(defun get-status-2 ()
+  (fldigi-rpc "main.get_status2"))
+
+(defun get-modem-bw ()
+  (fldigi-rpc "modem.get_bandwidth"))
+
+(defun get-modem-bw (bw)
+  (fldigi-rpc "modem.set_bandwidth" bw))
+
+(defun get-olivia-bw ()
+  (fldigi-rpc "modem.olivia.get_bandwidth"))
+
+(defun get-olivia-bw (bw)
+  (fldigi-rpc "modem.olivia.set_bandwidth" bw))
 
