@@ -163,7 +163,7 @@ send-buffer."
       (set-rx))))
 
 (defun get-modem-quality ()
-  "Return the modem quality number."
+  "Return the modem quality number (0-100)."
   (fldigi-rpc "modem.get_quality"))
 
 (defun search-up ()
@@ -238,12 +238,20 @@ modems)."
 (defun tune ()
   "Switch the radio to 'tune' mode (ie, transmit a carrier). This
 continues until you abort it."
-  (fldigi-rpc "main.tune" value))
+  (fldigi-rpc "main.tune"))
 
 (defun abort-tune ()
   "Abort tuning (also immediately aborts any other type of transmit
 immediately)."
-  (fldigi-rpc "main.abort" value))
+  (fldigi-rpc "main.abort"))
+
+(defun auto-tune (&optional (sec 5))
+  "Switch to tune mode for the optionally specified number of
+seconds (default 5), then revert to receive. Allows for an auto-tuner
+to auto-tune."
+  (tune)
+  (sleep sec)
+  (abort-tune))
 
 (defun get-status-1 ()
   "Get status message one (usually SNR)."

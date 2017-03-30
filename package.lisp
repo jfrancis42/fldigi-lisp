@@ -5,6 +5,8 @@
   (:export :*rpc-port*
 	   :*rpc-host*
 	   :*sweet-spot*
+	   :*start-wait*
+	   :*char-wait*
 	   :get-trx-status
 	   :get-carrier-frequency
 	   :set-carrier-frequency
@@ -49,6 +51,7 @@
 	   :toggle-reverse
 	   :tune
 	   :abort-tune
+	   :auto-tune
 	   :get-status-1
 	   :get-status-2
 	   :get-modem-bw
