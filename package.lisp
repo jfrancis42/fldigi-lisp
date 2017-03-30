@@ -52,5 +52,6 @@
 	   :get-status-1
 	   :get-status-2
 	   :get-modem-bw
-	   :get-modem-bw
-	   :get-olivia-bw))
+	   :set-modem-bw
+	   :get-olivia-bw
+	   :set-olivia-bw))
