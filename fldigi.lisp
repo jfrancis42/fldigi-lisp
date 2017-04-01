@@ -65,32 +65,40 @@ name. For select modems, automatically changes char timeouts."
   (fldigi-rpc "modem.set_by_name" name))
 
 (defun get-spot ()
-  "Returns the status of the auto-spot (1==on, 0==off)."
-  (fldigi-rpc "spot.get_auto"))
+  "Returns the status of the auto-spot."
+  (if (eql 1 (fldigi-rpc "spot.get_auto"))
+      t
+      nil))
 
-(defun toggle-spot (value)
+(defun toggle-spot ()
   "Toggles the status of auto-spot."
   (fldigi-rpc "spot.toggle_auto"))
 
 (defun get-afc ()
-  "Returns the status of the AFC setting (1==on, 0==off)."
-  (fldigi-rpc "main.get_afc"))
+  "Returns the status of the AFC setting."
+  (if (eql 1 (fldigi-rpc "main.get_afc"))
+      t
+      nil))
 
-(defun toggle-afc (value)
+(defun toggle-afc ()
   "Toggles the status of the AFC setting."
   (fldigi-rpc "main.toggle_afc"))
 
 (defun get-rsid-rx ()
-  "Returns the status of RxID (1==on, 0==off)."
-  (fldigi-rpc "main.get_rsid"))
+  "Returns the status of RxID."
+  (if (eql 1 (fldigi-rpc "main.get_rsid"))
+      t
+      nil))
 
 (defun toggle-rsid-rx ()
   "Toggles the status of RxID."
   (fldigi-rpc "main.toggle_rsid" value))
 
 (defun get-squelch ()
-  "Returns the status of the squelch setting (1==on, 0==off)."
-  (fldigi-rpc "main.get_squelch"))
+  "Returns the status of the squelch setting."
+  (if (eql 1 (fldigi-rpc "main.get_squelch"))
+      t
+      nil))
 
 (defun toggle-squelch ()
   "Toggles the status of the squelch setting (not valid for all
