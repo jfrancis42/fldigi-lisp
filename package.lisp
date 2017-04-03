@@ -29,6 +29,7 @@
 	   :set-tx
 	   :get-transmit-frequency
 	   :set-transmit-frequency
+	   :sweet-spot
 	   :add-tx-string
 	   :send-buffer
 	   :get-modem-quality
@@ -56,5 +57,6 @@
 	   :get-status-2
 	   :get-modem-bw
 	   :set-modem-bw
+	   :set-defaults
 	   :get-olivia-bw
 	   :set-olivia-bw))

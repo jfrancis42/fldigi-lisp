@@ -12,6 +12,11 @@
 (defparameter *message* "")
 (defparameter *message-lock* (bt:make-lock))
 
+(defparameter *default-modem* "BPSK31")
+(defparameter *default-mode* "USB")
+(defparameter *default-freq* 14070000)
+(defparameter *default-carrier* *sweet-spot*)
+
 (defun fldigi-rpc (thing &optional value)
   (if value
       (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing value) :host *rpc-host* :url "/RPC2" :port *rpc-port*)
@@ -147,6 +152,12 @@ frequency."
 	(set-carrier-frequency *sweet-spot*)
 	(set-dial-frequency (- freq *sweet-spot*)))
       (set-dial-frequency (- freq (get-carrier-frequency)))))
+
+(defun sweet-spot ()
+  "Set the carrier to the *sweet-spot* value, and adjust the dial
+frequency so that the tx/rx freq is the same as before the call, but
+now the carrier is in the 'sweet spot' of the rx audio (typically 1khz)."
+  (set-transmit-frequency (get-transmit-frequency) t))
 
 (defun add-tx-string (text)
   "Add a string to the buffer of data to be sent."
@@ -285,3 +296,10 @@ is selected)."
 (defun set-olivia-bw (bw)
   "Set modem bandwidth (only valid when an Olivia modem is selected)."
   (fldigi-rpc "modem.olivia.set_bandwidth" bw))
+
+(defun set-defaults ()
+  "Set everything back to a known good state."
+  (set-modem *default-modem*)
+  (set-mode *default-mode*)
+  (set-dial-frequency *default-freq*)
+  (set-carrier-frequency *default-carrier*))
