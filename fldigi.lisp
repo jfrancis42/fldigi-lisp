@@ -4,18 +4,18 @@
 
 ;;; "fldigi" goes here. Hacks and glory await!
 
-(defparameter *rpc-port* 7362)
-(defparameter *rpc-host* "localhost")
-(defparameter *sweet-spot* 1000)
-(defparameter *start-wait* 5)
-(defparameter *char-wait* 2)
-(defparameter *message* "")
-(defparameter *message-lock* (bt:make-lock))
+(defvar *rpc-port* 7362)
+(defvar *rpc-host* "localhost")
+(defvar *sweet-spot* 1000)
+(defvar *start-wait* 5)
+(defvar *char-wait* 2)
+(defvar *message* "")
+(defvar *message-lock* (bt:make-lock))
 
-(defparameter *default-modem* "BPSK31")
-(defparameter *default-mode* "USB")
-(defparameter *default-freq* 14070000)
-(defparameter *default-carrier* *sweet-spot*)
+(defvar *default-modem* "BPSK31")
+(defvar *default-mode* "USB")
+(defvar *default-freq* 14070000)
+(defvar *default-carrier* *sweet-spot*)
 
 (defun fldigi-rpc (thing &optional value)
   (if value
