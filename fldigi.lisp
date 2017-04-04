@@ -79,6 +79,11 @@ name. For select modems, automatically changes char timeouts."
   "Toggles the status of auto-spot."
   (fldigi-rpc "spot.toggle_auto"))
 
+(defun set-spot (state)
+  "Set Spot to state (t or nil)."
+  (unless (eq (state (get-spot)))
+    (toggle-spot)))
+
 (defun get-afc ()
   "Returns the status of the AFC setting."
   (if (eql 1 (fldigi-rpc "main.get_afc"))
@@ -88,6 +93,11 @@ name. For select modems, automatically changes char timeouts."
 (defun toggle-afc ()
   "Toggles the status of the AFC setting."
   (fldigi-rpc "main.toggle_afc"))
+
+(defun set-afc (state)
+  "Set AFC to state (t or nil)."
+  (unless (eq (state (get-afc)))
+    (toggle-afc)))
 
 (defun get-rsid-rx ()
   "Returns the status of RxID."
@@ -99,6 +109,11 @@ name. For select modems, automatically changes char timeouts."
   "Toggles the status of RxID."
   (fldigi-rpc "main.toggle_rsid" value))
 
+(defun set-rsid-rx (state)
+  "Set RxID to state (t or nil)."
+  (unless (eq (state (get-rsid-rx)))
+    (toggle-rsid-rx)))
+
 (defun get-squelch ()
   "Returns the status of the squelch setting."
   (if (eql 1 (fldigi-rpc "main.get_squelch"))
@@ -109,6 +124,11 @@ name. For select modems, automatically changes char timeouts."
   "Toggles the status of the squelch setting (not valid for all
 modems)."
   (fldigi-rpc "main.toggle_squelch" value))
+
+(defun set-squelch (state)
+  "Set squelch to state (t or nil)."
+  (unless (eq (state (get-squelch)))
+    (toggle-squelch)))
 
 (defun get-squelch-level ()
   "Returns the current squelch level."
@@ -253,6 +273,11 @@ all modems)."
   "Toggle the status of the 'Reverse' modem button (not valid for all
 modems)."
   (fldigi-rpc "main.toggle_reverse" value))
+
+(defun set-reverse (state)
+  "Set Reverse to state (t or nil)."
+  (unless (eq (state (get-reverse)))
+    (toggle-reverse)))
 
 (defun tune ()
   "Switch the radio to 'tune' mode (ie, transmit a carrier). This
