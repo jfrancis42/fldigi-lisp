@@ -19,8 +19,16 @@
 
 (defun fldigi-rpc (thing &optional value)
   (if value
-      (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing value) :host *rpc-host* :url "/RPC2" :port *rpc-port*)
-      (s-xml-rpc:xml-rpc-call (s-xml-rpc:encode-xml-rpc-call thing) :host *rpc-host* :url "/RPC2" :port *rpc-port*)))
+      (s-xml-rpc:xml-rpc-call
+       (s-xml-rpc:encode-xml-rpc-call thing value)
+       :host *rpc-host*
+       :url "/RPC2"
+       :port *rpc-port*)
+      (s-xml-rpc:xml-rpc-call
+       (s-xml-rpc:encode-xml-rpc-call thing)
+       :host *rpc-host*
+       :url "/RPC2"
+       :port *rpc-port*)))
 
 (defun get-carrier-frequency ()
   "Returns the current modem carrier frequency."
@@ -50,7 +58,8 @@ frequency."
 
 (defun set-modem (name)
   "Changes to the specified modem name. Returns the old modem
-name. For select modems, automatically changes char timeouts."
+name. For select modems, automatically changes char timeouts (todo: it
+should really do this for all modems)."
   (cond
     ((equal "BPSK31" name)
      (setf *start-wait* 5)
@@ -165,8 +174,8 @@ is true, the carrier is set to the 'sweet spot' (1000 hz for most
 radios, determined by the value of the global *sweet-spot*) and the
 dial frequency is calculated and set to be 1000hz lower than freq. If
 the second argument is nil, the carrier is left at it's current value,
-and the dial frequency is set to the specified freq minus the carrier
-frequency."
+and the dial frequency is set to the specified freq minus the current
+carrier frequency."
   (if sweet
       (progn
 	(set-carrier-frequency *sweet-spot*)
